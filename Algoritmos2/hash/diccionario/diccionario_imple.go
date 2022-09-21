@@ -137,16 +137,16 @@ func (d *diccionario[K, V]) Iterador() IterDiccionario[K, V] {
 	if d.cantidad != 0 {
 		for i := 0; i <= size; i++ {
 			if d.listas[i] != nil {
-				return &iterador_diccionario[K, V]{d, &d.listas[i], i, nil}
+				return &iterador_diccionario[K, V]{d, &d.listas[i], i, d.listas[i].Iterador()}
 			}
 		}
 	}
-	return &iterador_diccionario[K, V]{d, &d.listas[size], size, nil}
+	return &iterador_diccionario[K, V]{d, nil, size, nil}
 }
 
 func CrearHash[K comparable, T any](hash func(K) int) *diccionario[K, T] {
 	// &nodo[T]{t, nil, ""}
-	sliceListas := make([]lista.Lista, 13, 13)
+	sliceListas := make([]lista.Lista, 5000, 5000)
 	return &diccionario[K, T]{sliceListas, 0, hash}
 }
 

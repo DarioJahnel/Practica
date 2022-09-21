@@ -26,7 +26,7 @@ func (i *iterador_diccionario[K, V]) HaySiguiente() bool {
 // VerActual devuelve la clave y el dato del elemento actual en el que se encuentra posicionado el iterador.
 // Si no HaySiguiente, debe entrar en pánico con el mensaje 'El iterador termino de iterar'
 func (i *iterador_diccionario[K, V]) VerActual() (K, V) {
-	if (*i.elementoActual) == nil || (*i.elementoActual).EstaVacia() {
+	if i.elementoActual == nil || (*i.elementoActual).EstaVacia() {
 		panic("El iterador termino de iterar")
 	}
 	// Si va a ser el primer elemento de la lista
@@ -45,27 +45,20 @@ func (i *iterador_diccionario[K, V]) VerActual() (K, V) {
 // además avanza al siguiente elemento en el diccionario. Si no HaySiguiente, entonces debe entrar en pánico con
 // mensaje 'El iterador termino de iterar'
 func (i *iterador_diccionario[K, V]) Siguiente() K {
-	if (*i.elementoActual) == nil || (*i.elementoActual).EstaVacia() {
+	if i.elementoActual == nil || (*i.elementoActual).EstaVacia() {
 		panic("El iterador termino de iterar")
 	}
-	var res K
-
-	if i.iteradorLista == nil {
-		// lo creo
-		i.iteradorLista = (*i.elementoActual).Iterador()
-		return (*i.iteradorLista.VerActual()).(K)
+	res := (*i.iteradorLista.VerActual()).(record).clave.(K)
+	// itero
+	if i.iteradorLista.HaySiguiente() {
+		i.iteradorLista.Siguiente()
 	} else {
-		// itero
-		if i.iteradorLista.HaySiguiente() {
-			i.iteradorLista.Siguiente()
-			return (*i.iteradorLista.VerActual()).(K)
-		} else {
-			// si no hay siguiente busco el siguiente elemento de la lista
-			i.buscarSiguienteEnLista()
-			i.iteradorLista = (*i.elementoActual).Iterador()
-			return (*i.iteradorLista.VerActual()).(K)
-		}
+		// si no hay siguiente busco el siguiente elemento de la lista
+		i.indice++
+		i.buscarSiguienteEnLista()
 	}
+
+	return res
 	// if i.iteradorLista == nil {
 	// 	res = (*i.elementoActual).VerPrimero().(record).clave.(K)
 	// 	// Si la lista contiene mas de un nodo hago un iterador y lo avanzo a la segunda posicion
@@ -88,23 +81,22 @@ func (i *iterador_diccionario[K, V]) Siguiente() K {
 	// 	}
 
 	// }
-	return res
 }
 
 func (i *iterador_diccionario[K, V]) buscarSiguienteEnLista() {
 	i.iteradorLista = nil
+	i.elementoActual = nil
 	for j := i.indice; j < len(i.diccionario.listas); j++ {
+		i.indice = j
 		elem := i.diccionario.listas[j]
 		if elem == nil {
 			continue
 		} else {
 			i.elementoActual = &elem
-			i.indice = j
-			break
+			i.iteradorLista = (*i.elementoActual).Iterador()
+			return
 		}
 	}
-
-	panic("El iterador termino de iterar")
 }
 
 func (i *iterador_diccionario[K, V]) existeSiguienteEnLista() bool {
