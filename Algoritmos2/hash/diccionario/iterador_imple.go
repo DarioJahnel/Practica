@@ -1,6 +1,8 @@
 package diccionario
 
-import "hash/lista"
+import (
+	"hash/lista"
+)
 
 type iterador_diccionario[K comparable, V any] struct {
 	diccionario    *diccionario[K, V]
@@ -50,37 +52,13 @@ func (i *iterador_diccionario[K, V]) Siguiente() K {
 	}
 	res := (*i.iteradorLista.VerActual()).(record).clave.(K)
 	// itero
-	if i.iteradorLista.HaySiguiente() {
-		i.iteradorLista.Siguiente()
-	} else {
+	if i.iteradorLista.Siguiente(); !i.iteradorLista.HaySiguiente() {
 		// si no hay siguiente busco el siguiente elemento de la lista
 		i.indice++
 		i.buscarSiguienteEnLista()
 	}
 
 	return res
-	// if i.iteradorLista == nil {
-	// 	res = (*i.elementoActual).VerPrimero().(record).clave.(K)
-	// 	// Si la lista contiene mas de un nodo hago un iterador y lo avanzo a la segunda posicion
-	// 	if (*i.elementoActual).Largo() > 1 {
-	// 		i.iteradorLista = (*i.elementoActual).Iterador()
-	// 		i.iteradorLista.Siguiente()
-	// 	} else {
-	// 		// Si no busco el siguiente elemento en la lista
-	// 		i.buscarSiguienteEnLista()
-	// 	}
-
-	// } else {
-	// 	// Si el iterador de lista tiene mas valores, avanzo
-	// 	res = (*i.iteradorLista.VerActual()).(record).clave.(K)
-	// 	if i.iteradorLista.HaySiguiente() {
-	// 		i.iteradorLista.Siguiente()
-	// 	} else {
-	// 		// Si no tiene busco el siguiente elemento en la lista
-	// 		i.buscarSiguienteEnLista()
-	// 	}
-
-	// }
 }
 
 func (i *iterador_diccionario[K, V]) buscarSiguienteEnLista() {
@@ -100,7 +78,7 @@ func (i *iterador_diccionario[K, V]) buscarSiguienteEnLista() {
 }
 
 func (i *iterador_diccionario[K, V]) existeSiguienteEnLista() bool {
-	for j := i.indice; j < len(i.diccionario.listas); j++ {
+	for j := i.indice + 1; j < len(i.diccionario.listas); j++ {
 		elem := i.diccionario.listas[j]
 		if elem == nil {
 			continue

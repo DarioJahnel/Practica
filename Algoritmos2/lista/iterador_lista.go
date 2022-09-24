@@ -14,11 +14,7 @@ func (i *iteradorLista) VerActual() *any {
 }
 
 func (i *iteradorLista) HaySiguiente() bool {
-	if i.nodoActual == nil {
-		return false
-	}
-
-	return i.nodoActual.Siguiente != nil
+	return i.nodoActual != nil
 }
 func (i *iteradorLista) Siguiente() *any {
 	if i.nodoActual == nil {
