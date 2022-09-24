@@ -19,6 +19,9 @@ type record struct {
 
 // Guardar guarda el par clave-dato en el Diccionario. Si la clave ya se encontraba, se actualiza el dato asociado
 func (d *diccionario[K, V]) Guardar(clave K, dato V) {
+	if d.doResize() {
+		d.resize()
+	}
 	posicion := d.getPos(clave)
 	datoNodo := record{clave, dato}
 	// Si no existe la lista
@@ -146,7 +149,7 @@ func (d *diccionario[K, V]) Iterador() IterDiccionario[K, V] {
 
 func CrearHash[K comparable, T any](hash func(K) int) *diccionario[K, T] {
 	// &nodo[T]{t, nil, ""}
-	sliceListas := make([]lista.Lista, 5000, 5000)
+	sliceListas := make([]lista.Lista, 13, 13)
 	return &diccionario[K, T]{sliceListas, 0, hash}
 }
 
@@ -160,4 +163,24 @@ func convertirABytes[K comparable](clave K) []byte {
 	enc := gob.NewEncoder(&buf)
 	enc.Encode(clave)
 	return buf.Bytes()
+}
+
+func (d *diccionario[K, V]) doResize() bool {
+	return d.Cantidad() > cap(d.listas)*3
+}
+
+func (d *diccionario[K, V]) resize() {
+	sliceListas := make([]lista.Lista, d.cantidad*10, d.cantidad*10)
+	newDicc := &diccionario[K, V]{sliceListas, 0, d.hashFn}
+
+	oldIterador := d.Iterador()
+	for {
+		key, value := oldIterador.VerActual()
+		newDicc.Guardar(key, value)
+		oldIterador.Siguiente()
+		if !oldIterador.HaySiguiente() {
+			break
+		}
+	}
+	*d = *newDicc
 }
