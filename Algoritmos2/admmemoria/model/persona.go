@@ -49,17 +49,25 @@ func (per *Persona) Imprimir() {
 // O(n log n)
 func (per *Persona) Destruir() {
 	fmt.Println(per)
-	if per.hij_mayor == nil && per.hij_menor == nil {
-		administrador.LiberarMemoria[Persona](per)
+	// Antes de la clase de AB
+	// if per.hij_mayor == nil && per.hij_menor == nil {
+	// 	administrador.LiberarMemoria[Persona](per)
+	// 	return
+	// }
+
+	// if per.hij_mayor != nil {
+	// 	per.hij_mayor.Destruir()
+	// }
+	// if per.hij_menor != nil {
+	// 	per.hij_menor.Destruir()
+	// }
+
+	// Despues de clases de AB
+	if per == nil {
 		return
 	}
-
-	if per.hij_mayor != nil {
-		per.hij_mayor.Destruir()
-	}
-	if per.hij_menor != nil {
-		per.hij_menor.Destruir()
-	}
-
+	per.hij_mayor.Destruir()
+	per.hij_menor.Destruir()
+	
 	administrador.LiberarMemoria[Persona](per)
 }
